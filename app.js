@@ -9,16 +9,16 @@ const passport = require("./passport-config");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("./models/user");
 const { sendEmail } = require("./email");
-const _ = require('lodash');
 const { MongoClient, ServerApiVersion } = require('mongodb');
-
 
 const homeStartingContent = "Welcome to Our Blog Site,Explore a world of ideas and insights at our blog site, where we delve into a myriad of topics that cater to your curiosity. Whether you're passionate about technology, science, or simply enjoy discovering new things, we've got you covered.";
 const contactContent = "Have questions or suggestions? The contact section is the gateway to reaching out. We value your feedback and are eager to engage in meaningful conversations. Let's build a community where ideas flow freely.";
-const contactConfig = {
-  YOUR_EMAIL: "akashramesh2607@gmail.com"}
-const app = express();
+const aboutContent = "This is the about content.";
 
+const contactConfig = {
+  YOUR_EMAIL: "akashramesh2607@gmail.com"
+};
+const app = express();
 
 app.set('view engine', 'ejs');
 app.use(flash());
@@ -50,6 +50,52 @@ function isLoggedIn(req, res, next) {
   }
   res.redirect("/login");
 }
+
+const uri = process.env.MONGODB_ATLAS_URI;
+
+// Connect to MongoDB using mongoose
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000,
+  ssl: true,
+  sslValidate: true
+})
+  .then(() => {
+    // If the connection is successful, continue setting up your Express app
+
+    const client = new MongoClient(uri, {
+      serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+      }
+    });
+
+    async function run() {
+      try {
+        // Connect the client to the server (optional starting in v4.7)
+        await client.connect();
+        // Send a ping to confirm a successful connection
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+      } finally {
+        // Ensures that the client will close when you finish/error
+        await client.close();
+      }
+    }
+
+    run().catch(console.dir);
+
+    // Continue with the rest of your app setup
+    const postSchema = new mongoose.Schema({
+      id: mongoose.Schema.Types.ObjectId,
+      title: String,
+      content: String,
+      author: String,
+    });
+
+    const Post = mongoose.model("Post", postSchema);
 
 app.get("/login", function (req, res) {
   res.render("login", { message: req.flash("error") });
@@ -93,44 +139,6 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
-const uri = process.env.MONGODB_ATLAS_URI;
-mongoose.connect(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 30000,
-  ssl: true,
-  sslValidate: true
-});
-
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
-
-const postSchema = new mongoose.Schema({
-  id: mongoose.Schema.Types.ObjectId,
-  title: String,
-  content: String,
-  author: String,
-});
-
-const Post = mongoose.model("Post", postSchema);
 
 app.get("/", function (req, res) {
   if (req.isAuthenticated() && res.locals.currentUser) {
@@ -278,5 +286,10 @@ res.render("contact", { success: req.flash("success") });
 
 
 app.listen(3000, function () {
-  console.log("Server started on port 3000");
-});
+      console.log("Server started on port 3000");
+    });
+  })
+  .catch((err) => {
+    // If there's an error in connecting to MongoDB, log the error
+    console.error('Error connecting to MongoDB:', err);
+  });
