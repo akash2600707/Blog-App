@@ -59,7 +59,8 @@ mongoose.connect(uri, {
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 30000,
   ssl: true,
-  sslValidate: true
+  sslValidate: true,
+  useCreateIndex: true 
 })
   .then(() => {
     // If the connection is successful, continue setting up your Express app
