@@ -1,0 +1,32 @@
+<%- include("partials/header"); -%>
+
+  <h1>Home</h1>
+
+  <% if (currentUser) { %>
+    <p>Hi <%= currentUser.username %>!</p>
+    <% } %>
+              <p>
+                <%= startingContent %>
+              </p>
+
+              <% if (posts.length> 0) { %>
+                <% posts.forEach(function (post) { %>
+                  <h1>
+                    <%= post.title %>
+                  </h1>
+                  <p>
+                    <%= post.content.substring(0, 100) + " ..." %>
+                  </p>
+                  <a href="/posts/<%= post._id %>/edit">Edit</a>
+                  <a href="/posts/<%= post._id %>/delete">Delete</a>
+                  <a href="/posts/<%= post.title %>">Read More</a>
+                  <% }); %>
+                    <% } else { %>
+                      <div style="text-align: center; font-size: 24px; margin-top: 50px;">
+                        <p>No posts yet.</p>
+                      </div>
+                      <% } %>
+
+                
+
+                        <%- include("partials/footer"); -%>
