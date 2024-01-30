@@ -8,6 +8,7 @@ Database Integration: MongoDB database integration for storing blog posts and us
 CRUD Operations: Allows users to create, read, update, and delete their blog posts.
 Contact Form: A contact form for users to reach out, with email notifications using the integrated email module.
 Responsive Design: The site is designed to be responsive, providing a seamless experience across different devices.
+
 Project Structure:
 /models: Mongoose models for defining the schema of the User and Post entities.
 /passport-config.js: Configuration file for Passport.js authentication strategies.
@@ -15,6 +16,7 @@ Project Structure:
 /views: EJS templates for rendering different pages.
 /public: Static assets like stylesheets and client-side JavaScript.
 /routes: Express routes for handling different HTTP requests.
+
 How to Run:
 Clone the repository: git clone https://github.com/akash2600707/Blog-App.git
 Install dependencies: npm install
